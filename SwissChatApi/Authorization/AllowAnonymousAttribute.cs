@@ -1,6 +1,5 @@
-﻿namespace SwissChatApi.Authorization
-{
-    public class AllowAnonymousAttribute
-    {
-    }
-}
+﻿namespace SwissChatApi.Authorization;
+
+[AttributeUsage(AttributeTargets.Method)]
+public class AllowAnonymousAttribute : Attribute
+{ }
