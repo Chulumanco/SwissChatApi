@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using SwissChatApi.Authorization;
+using SwissChatApi.Entities;
 using SwissChatApi.Helpers;
 using SwissChatApi.Model.Users;
 using SwissChatApi.Services;
@@ -29,17 +30,55 @@ public class UsersController : ControllerBase
     }
     [AllowAnonymous]
     [HttpPost("authenticate")]
-    public IActionResult Authenticate(AuthenticateRequest model)
+    public async Task<IActionResult> Authenticate(AuthenticateRequest model)
     {
-        var response = _userService.Authenticate(model);
-        return Ok(response);
+        try
+        {
+            // create user
+            var response = await _userService.Authenticate(model);
+
+            return Ok(response);
+        }
+        catch (AppException ex)
+        {
+            // return error message if there was an exception
+            return BadRequest(new { message = ex.Message });
+        }
     }
+    //Add logout
+    //[AllowAnonymous]
+    //[HttpPost("authenticate")]
+    //public async Task<IActionResult> Authenticate(AuthenticateRequest model)
+    //{
+    //    try
+    //    {
+    //        // create user
+    //        var response = await _userService.Authenticate(model);
+
+    //        return Ok(response);
+    //    }
+    //    catch (AppException ex)
+    //    {
+    //        // return error message if there was an exception
+    //        return BadRequest(new { message = ex.Message });
+    //    }
+    //}
     [AllowAnonymous]
     [HttpPost("register")]
     public IActionResult Register(RegisterRequest model)
     {
-        _userService.Register(model);
-        return Ok(new { message = "Registration successful" });
+        try
+        {
+            // create user
+            _userService.Register(model);
+            return Ok(new { message = "Registration successful" });
+        }
+        catch (AppException ex)
+        {
+            // return error message if there was an exception
+            return BadRequest(new { message = ex.Message });
+        }
+        
     }
     [HttpGet]
     public IActionResult GetAll()
@@ -48,19 +87,27 @@ public class UsersController : ControllerBase
         return Ok(users);
     }
     [HttpGet("{id}")]
-    public IActionResult GetById(int id)
+    public IActionResult GetById(Guid id)
     {
         var user = _userService.GetById(id);
         return Ok(user);
     }
     [HttpPut("{id}")]
-    public IActionResult Update(int id, UpdateRequest model)
+    public IActionResult Update(Guid id, UpdateRequest model)
     {
-        _userService.Update(id, model);
-        return Ok(new { message = "User updated successfully" });
+        try
+        {
+            _userService.Update(id, model);
+            return Ok(new { message = "User updated successfully" });
+        }
+        catch (AppException ex)
+        {
+            // return error message if there was an exception
+            return BadRequest(new { message = ex.Message });
+        }
     }
     [HttpDelete("{id}")]
-    public IActionResult Delete(int id)
+    public IActionResult Delete(Guid id)
     {
         _userService.Delete(id);
         return Ok(new { message = "User deleted successfully" });

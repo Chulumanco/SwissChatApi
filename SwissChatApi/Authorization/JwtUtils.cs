@@ -11,7 +11,7 @@ namespace SwissChatApi.Authorization
     public interface IJwtUtils
     {
         public string GenerateToken(User user);
-        public int? ValidateToken(string token);
+        public Guid? ValidateToken(string token);
     }
     public class JwtUtils : IJwtUtils
     {
@@ -37,7 +37,7 @@ namespace SwissChatApi.Authorization
             return tokenHandler.WriteToken(token);
         }
 
-        public int? ValidateToken(string token)
+        public Guid? ValidateToken(string token)
         {
             if (token == null)
                 return null;
@@ -53,11 +53,11 @@ namespace SwissChatApi.Authorization
                     ValidateIssuer = false,
                     ValidateAudience = false,
                     // set clockskew to zero so tokens expire exactly at token expiration time (instead of 5 minutes later)
-                    ClockSkew = TimeSpan.Zero
+                   // ClockSkew = TimeSpan.Zero
                 }, out SecurityToken validatedToken);
 
                 var jwtToken = (JwtSecurityToken)validatedToken;
-                var userId = int.Parse(jwtToken.Claims.First(x => x.Type == "id").Value);
+                var userId = Guid.Parse(jwtToken.Claims.First(x => x.Type == "id").Value);
 
                 // return user id from JWT token if validation successful
                 return userId;

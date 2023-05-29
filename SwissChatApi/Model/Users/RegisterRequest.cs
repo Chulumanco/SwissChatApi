@@ -15,5 +15,6 @@ namespace SwissChatApi.Model.Users
 
         [Required]
         public string Password { get; set; }
+       // public string Status { get; set; }
     }
 }

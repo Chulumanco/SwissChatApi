@@ -16,5 +16,6 @@ namespace SwissChatApi.Entities
         }
 
         public DbSet<User> Users { get; set; }
+        public DbSet<Contacts> Contacts { get; set; }   
     }
 }

@@ -21,25 +21,36 @@ namespace SwissChatApi.Services
             _jwtUtils = jwtUtils;
             _mapper = mapper;
         }
-        public AuthenticateResponse Authenticate(AuthenticateRequest model)
+        public async Task<AuthenticateResponse> Authenticate(AuthenticateRequest model)
         {
             var user = _context.Users.SingleOrDefault(x => x.Username == model.Username);
 
             // validate
-            if (user == null || !BCrypt.Net.BCrypt.
-                Verify(model.Password, user.PasswordHash))
-                throw new AppException("Username or password is incorrect");
+            if (user == null || !BCrypt.Net.BCrypt.Verify(model.Password, user.PasswordHash))
+               throw new AppException("Username or password is incorrect");
 
             // authentication successful
+
             var response = _mapper.Map<AuthenticateResponse>(user);
+            await UpdateUserAuth(response.Id,"login");
             response.Token = _jwtUtils.GenerateToken(user);
+           // response.IsAuthenticated = true;
+
             return response;
+        }
+        public async Task<string> Logoff(Guid id)
+        {
+            var user = _context.Users.SingleOrDefault(x => x.Id == id);
+                 await UpdateUserAuth(user.Id, null);
+                // response.IsAuthenticated = true;
+
+            return "User logged out";
         }
         public IEnumerable<User> GetAll()
         {
             return _context.Users;
         }
-        public User GetById(int id)
+        public User GetById(Guid id)
         {
             return getUser(id);
         }
@@ -51,15 +62,17 @@ namespace SwissChatApi.Services
 
             // map model to new user object
             var user = _mapper.Map<User>(model);
+            user.Status = "Active";
 
             // hash password
             user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.Password);
 
             // save user
+            
             _context.Users.Add(user);
             _context.SaveChanges();
         }
-        public void Update(int id, UpdateRequest model)
+        public void Update(Guid id, UpdateRequest model)
         {
             var user = getUser(id);
 
@@ -71,12 +84,16 @@ namespace SwissChatApi.Services
             if (!string.IsNullOrEmpty(model.Password))
                 user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.Password);
 
+           
+
             // copy model to user and save
             _mapper.Map(model, user);
-            _context.Users.Update(user);
-            _context.SaveChanges();
+          
+          var changeIsSucces =  _context.SaveChanges();
+            if(changeIsSucces>0)
+                UpdateUserContact(user.Id);
         }
-        public void Delete(int id)
+        public void Delete(Guid id)
         {
             var user = getUser(id);
             _context.Users.Remove(user);
@@ -84,12 +101,45 @@ namespace SwissChatApi.Services
         }
         // helper methods
 
-        private User getUser(int id)
+        private User getUser(Guid id)
         {
             var user = _context.Users.Find(id);
             if (user == null) throw new KeyNotFoundException("User not found");
             return user;
         }
+        private Contacts getContact(Guid id)
+        {
+            var user = _context.Contacts.FirstOrDefault(x => x.UserId == id);   
+            //if (user == null) throw new KeyNotFoundException("User not found");
+            return user;
+        }
+        private void UpdateUserContact(Guid id)
+        {
+            var contact = getContact(id);
+            if(contact ==null)
+            {
+                //Don't do anything
+                return ;
+            }
+            _context.Contacts.Update(contact);
+            _context.SaveChanges();
+           // return contact;
 
+        }
+        private async Task<int> UpdateUserAuth(Guid id, string? action)
+        {
+            /// var contact = getContact(id);
+            var user = await _context.Users.FindAsync(id);
+            if (action == "login")
+            {
+                user.IsAuthenticated = true;
+            }
+            else
+                user.IsAuthenticated = false;
+            _context.Update(user);
+            var resap = await  _context.SaveChangesAsync();
+           return resap;
+
+        }
     }
 }

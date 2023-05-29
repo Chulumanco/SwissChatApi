@@ -1,3 +1,4 @@
+using Microsoft.OpenApi.Models;
 using SwissChatApi.Authorization;
 using SwissChatApi.Entities;
 using SwissChatApi.Helpers;
@@ -19,14 +20,44 @@ services.AddControllers();
 // configure automapper with all automapper profiles from this assembly
 services.AddAutoMapper(typeof(Program));
 
+// configure strongly typed settings object
+services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
 // configure DI for application services
 services.AddScoped<IJwtUtils, JwtUtils>();
 services.AddScoped<IUserService, UserService>();
-// configure strongly typed settings object
-services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
+services.AddScoped<IContactService, ContactService>();  
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 services.AddEndpointsApiExplorer();
-services.AddSwaggerGen();
+
+//services.AddSwaggerGen();
+services.AddSwaggerGen(c => {
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "SwissChatApi",
+        Version = "v1"
+    });
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "JWT Authorization header using the Bearer scheme. \r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\nExample: \"Bearer\"",
+    });
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement {
+        {
+            new OpenApiSecurityScheme {
+                Reference = new OpenApiReference {
+                    Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                }
+            },
+            new string[] {}
+        }
+    });
+});
 
 var app = builder.Build();
 
@@ -41,6 +72,9 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
-app.MapControllers();
+// custom jwt auth middleware
+app.UseMiddleware<JwtMiddleware>();
 
+app.MapControllers();
 app.Run();
+//app.Run();

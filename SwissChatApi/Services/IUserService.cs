@@ -5,11 +5,11 @@ namespace SwissChatApi.Services
 {
     public interface IUserService
     {
-        AuthenticateResponse Authenticate(AuthenticateRequest model);
+       Task <AuthenticateResponse> Authenticate(AuthenticateRequest model);
         IEnumerable<User> GetAll();
-        User GetById(int id);
+        User GetById(Guid id);
         void Register(RegisterRequest model);
-        void Update(int id, UpdateRequest model);
-        void Delete(int id);
+        void Update(Guid id, UpdateRequest model);
+        void Delete(Guid id);
     }
 }
