@@ -1,0 +1,39 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - SwissChatClient</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/maintemp.css" asp-append-version="true" />
+    
+    <link rel="stylesheet" href="~/SwissChatClient.styles.css" asp-append-version="true" />
+</head>
+<body>
+    <header>
+      
+            <nav class="navbar">
+            <a class="navbar-brand" href="#"><img  height="40" src="https://swisssystems.co.za/wp-content/uploads/2021/01/New_Logo-removebg-preview.png.webp" class="attachment-full size-full wp-image-7049" alt="" loading="lazy" srcset="https://swisssystems.co.za/wp-content/uploads/2021/01/New_Logo-removebg-preview.png.webp 507w, https://swisssystems.co.za/wp-content/uploads/2021/01/New_Logo-removebg-preview-300x226.png.webp 300w" sizes="(max-width: 507px) 100vw, 507px"></a>
+                <ul class="navbar-nav">
+                   @* <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Services</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>*@
+                </ul>
+            </nav>
+        </header>
+ 
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+  
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

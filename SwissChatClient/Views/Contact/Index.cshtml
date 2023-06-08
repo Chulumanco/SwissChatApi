@@ -1,0 +1,153 @@
+﻿@model IEnumerable<SwissChatClient.Models.ContactViewModel.ContactResponse> 
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Contacts</title>
+  
+</head>
+<body>
+    <header>
+        <div class="container">
+
+            <nav>
+                <ul>
+                    <li><a href="#">Home</a></li>
+                   
+                    <li><a href="#">Groups</a></li>
+                    <li><a href="#">Messages</a></li>
+                    <li><a href="#">Profile</a></li>
+                    <li><a href="#">Logout</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-8"> <h5>Contacts</h5></div>
+                <div class="col-sm-4">
+                    <!-- Button to trigger the modal -->
+                  
+                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addContact">
+                        Create Contact
+                    </button>
+                </div>
+            </div>
+            <!-- Content here -->
+           
+           
+            <hr/>
+
+            <div class="tweet">
+                <div class="user-avatar">
+                </div>
+                <div class="tweet-content">
+                    @foreach(var item in Model)
+                    {
+                      
+                        <div class="row">
+                            <div class="col">
+                                <h5><a >@item.Username</a></h5>
+                            </div>
+                            <div class="col">
+                                <button type="button" id="sendButton" data-username="@item.Username" class="btn btn-outline-info btn-sm">chat</button>
+                            </div>
+                        </div>
+                        bool logged = @item.IsAuthenticated;
+                        <span>
+                            @if (logged)
+                            {
+                                <p class="text-success">Online</p>
+                                
+                            }
+                            else
+                            {
+
+                                <p class="text-secondary">Offline</p>
+                            }
+                        </span>
+          
+                        <hr/>
+                        
+                    }
+                </div>
+            </div>
+            <!-- More tweets... -->
+        </div>
+    </main>
+
+</body>
+<!-- Modal -->
+@*<form action="" class="form-horizontal" id="CreateContactForm">*@
+    <div class="modal fade" id="addContact" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Add Contact</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="text" id="contact_username" class="form-control" placeholder="Enter Username"/>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                @*<button type="button" onclick="saveContact()"  class="btn btn-success">Save changes</button>*@
+                <button type="button" id="btnSave" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+@*</form>
+*@
+</html>
+@section Scripts {
+    
+    <script>
+        //$(document).ready(function () {
+        //   getUsername();
+        //});
+        document.getElementById("sendButton").addEventListener("click", function () {
+            //insert here the code to be executed
+            let username = $(this).data('username');
+            getUsername(username);
+        });
+
+
+        const getUsername = (username) => {
+
+            const url = "/Contact/GetUser/?username=' " + username
+            $.ajax({
+                type: "GET",
+                url: url,
+                contentType: "application/json; charset=utf-8",
+                //headers: {
+                //    "Content-Type": "application/json",
+                //},
+                //dataType: "json",
+                success: function (status) {
+                    debugger
+                    window.location.href = "/Contact/SendMessage/";
+                    console.log(status);
+
+
+                },
+                error: function () {
+
+                }
+            });
+
+        }
+
+
+       
+    </script>
+}
+
+
+
+
+
+
+

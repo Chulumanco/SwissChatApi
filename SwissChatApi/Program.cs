@@ -15,7 +15,11 @@ if (env.IsProduction())
 else
     services.AddDbContext<SwissDBContext, SqliteSwissDBContext>();
 
-services.AddControllers();
+services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+});
+
 
 // configure automapper with all automapper profiles from this assembly
 services.AddAutoMapper(typeof(Program));
@@ -59,7 +63,11 @@ services.AddSwaggerGen(c => {
     });
 });
 
+
+
 var app = builder.Build();
+
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -67,6 +75,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseCors(builder =>
+{
+    builder
+    .AllowAnyOrigin()
+    .AllowAnyMethod()
+    .AllowAnyHeader();
+});
 
 app.UseHttpsRedirection();
 

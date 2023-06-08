@@ -14,6 +14,7 @@ namespace SwissChatApi.Entities
         [JsonIgnore]
         public string PasswordHash { get; set; }
         public ICollection<Contacts> Contacts { get; set; }
-        
+        public ICollection<Group> Groups { get; set; }
+
     }
 }

@@ -41,28 +41,11 @@ public class UsersController : ControllerBase
         }
         catch (AppException ex)
         {
-            // return error message if there was an exception
-            return BadRequest(new { message = ex.Message });
+           
+            return BadRequest(new { respones = ex.Message+"!",message ="Invalid login" });
         }
     }
-    //Add logout
-    //[AllowAnonymous]
-    //[HttpPost("authenticate")]
-    //public async Task<IActionResult> Authenticate(AuthenticateRequest model)
-    //{
-    //    try
-    //    {
-    //        // create user
-    //        var response = await _userService.Authenticate(model);
-
-    //        return Ok(response);
-    //    }
-    //    catch (AppException ex)
-    //    {
-    //        // return error message if there was an exception
-    //        return BadRequest(new { message = ex.Message });
-    //    }
-    //}
+ 
     [AllowAnonymous]
     [HttpPost("register")]
     public IActionResult Register(RegisterRequest model)
@@ -71,7 +54,7 @@ public class UsersController : ControllerBase
         {
             // create user
             _userService.Register(model);
-            return Ok(new { message = "Registration successful" });
+            return Ok(new { message = " Successful" });
         }
         catch (AppException ex)
         {
@@ -80,12 +63,12 @@ public class UsersController : ControllerBase
         }
         
     }
-    [HttpGet]
-    public IActionResult GetAll()
-    {
-        var users = _userService.GetAll();
-        return Ok(users);
-    }
+    //[HttpGet]
+    //public IActionResult GetAll()
+    //{
+    //    var users = _userService.GetAll();
+    //    return Ok(users);
+    //}
     [HttpGet("{id}")]
     public IActionResult GetById(Guid id)
     {

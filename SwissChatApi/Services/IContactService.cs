@@ -1,4 +1,5 @@
 ﻿using SwissChatApi.Entities;
+using SwissChatApi.Model.Contacts;
 using SwissChatApi.Model.Users;
 
 namespace SwissChatApi.Services
@@ -6,10 +7,14 @@ namespace SwissChatApi.Services
     public interface IContactService
     {
 
-        Task<Contacts> Create(string username);
-        Task<IEnumerable<Contacts>> GetUserContact(Guid id);
+        Task<Contacts> Create(string username, Guid userid);
+        Task<IEnumerable<ContactResponse>> GetUserContact(Guid id);
+      //  Task<IEnumerable<>> GetUserContact(Guid id);
         Task<Contacts> RemoveContact(string username, Guid userId);
+        Task<User> GetUserByID(string userName);
 
 
-        }
+
+
+    }
 }

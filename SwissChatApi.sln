@@ -5,6 +5,8 @@ VisualStudioVersion = 17.5.33424.131
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SwissChatApi", "SwissChatApi\SwissChatApi.csproj", "{B3FC2073-48FF-4E5A-8225-650467E0488C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SwissChatClient", "SwissChatClient\SwissChatClient.csproj", "{0C200350-04EC-4BD2-B82C-CE9599DCC6FD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{B3FC2073-48FF-4E5A-8225-650467E0488C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B3FC2073-48FF-4E5A-8225-650467E0488C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B3FC2073-48FF-4E5A-8225-650467E0488C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0C200350-04EC-4BD2-B82C-CE9599DCC6FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C200350-04EC-4BD2-B82C-CE9599DCC6FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C200350-04EC-4BD2-B82C-CE9599DCC6FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C200350-04EC-4BD2-B82C-CE9599DCC6FD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

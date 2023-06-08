@@ -1,0 +1,48 @@
+﻿@page
+
+@*@model ChatsViewModel*@
+
+@{
+    var sessionData = ViewBag.SessionData as string;
+}
+
+
+
+<form method="post">
+    <div>
+        <h4 class="card-title text-primary"> Send a text to @sessionData</h4>
+       <hr/>
+    </div>
+
+        <div class="input-group">
+            <textarea class="form-control" placeholder="What's happening?" rows="3"></textarea>
+           
+        </div>
+        <br/>
+    <div>
+    <button type="submit" class="btn btn-primary">Send Message</button>
+    </div>
+
+</form>
+
+@section Scripts {
+    <script src="~/lib/signalr/dist/browser/signalr.min.js"></script>
+    <script>
+        var user = '@sessionData';
+       
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/chatHub")
+            .build();
+
+        connection.start().then(function () {
+            console.log("Connected to SignalR Hub");
+        }).catch(function (err) {
+            console.error(err.toString());
+        });
+
+        connection.on("ReceiveMessage", function (user, message) {
+            console.log(user + ": " + message);
+        });
+    </script>
+}
+

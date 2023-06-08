@@ -1,4 +1,7 @@
-﻿namespace SwissChatApi.Model.Users
+﻿using SwissChatApi.Entities;
+using System.Text.Json.Serialization;
+
+namespace SwissChatApi.Model.Users
 {
     public class AuthenticateResponse
     {
@@ -8,5 +11,6 @@
         public string Username { get; set; }
         public string Token { get; set; }
         public bool IsAuthenticated { get; set; }
+   
     }
 }

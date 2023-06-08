@@ -1,0 +1,65 @@
+﻿body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f5f8fa;
+}
+
+.container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+header {
+    background-color: #22215F;
+    color: white;
+    padding: 10px 0;
+}
+
+    header h1 {
+        font-size: 24px;
+        margin: 0;
+        padding: 0;
+    }
+
+nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+    nav ul li {
+        display: inline;
+        margin-right: 10px;
+    }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+        }
+
+main {
+    background-color: white;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.tweet {
+    display: flex;
+    margin-bottom: 20px;
+}
+
+.user-avatar {
+    margin-right: 10px;
+}
+
+    .user-avatar img {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+    }
+
+.tweet-content {
+    flex: 1;
+}
