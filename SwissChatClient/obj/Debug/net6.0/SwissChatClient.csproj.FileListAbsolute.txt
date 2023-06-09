@@ -1,5 +1,6 @@
 C:\Users\Chulumanco\source\repos\SwissChatApi\SwissChatClient\bin\Debug\net6.0\appsettings.Development.json
 C:\Users\Chulumanco\source\repos\SwissChatApi\SwissChatClient\bin\Debug\net6.0\appsettings.json
+C:\Users\Chulumanco\source\repos\SwissChatApi\SwissChatClient\bin\Debug\net6.0\libman.json
 C:\Users\Chulumanco\source\repos\SwissChatApi\SwissChatClient\bin\Debug\net6.0\SwissChatClient.staticwebassets.runtime.json
 C:\Users\Chulumanco\source\repos\SwissChatApi\SwissChatClient\bin\Debug\net6.0\SwissChatClient.exe
 C:\Users\Chulumanco\source\repos\SwissChatApi\SwissChatClient\bin\Debug\net6.0\SwissChatClient.deps.json

@@ -3,12 +3,15 @@ using Microsoft.AspNetCore.SignalR;
 
 using SwissChatClient.Helpers;
 using SwissChatClient.Models;
+using System.Reflection;
+using System.Text.Json.Nodes;
 using static SwissChatClient.Models.ChatsViewModel;
+using static SwissChatClient.Models.UserViewModel;
 
 namespace SwissChatClient.Controllers
 {
     [ApiController]
-    [Route("api/chat")]
+    [Route("/api/chat")]
     public class ChatController : ControllerBase
     {
         private readonly IHubContext<ChatHub> _chatHubContext;
@@ -26,26 +29,17 @@ namespace SwissChatClient.Controllers
             await _chatHubContext.Clients.Group(groupName).SendAsync("ReceiveMessage", message.UserName, message.Message);
             return Ok();
         }
-
-        [HttpPost("user")]
-        public async Task<IActionResult> SendMessageToUser(string userId, [FromBody] SendMessageModel message)
+        [HttpPost("sendToUser")]
+        public async Task<IActionResult> SendMessage(string username, string message)
         {
-            await _chatHubContext.Clients.User(userId).SendAsync("ReceiveMessage", message.UserName, message.Message);
+            
+            // Implement logic to send the message
+            await _chatHubContext.Clients.All.SendAsync("ReceiveMessage", username, message);
             return Ok();
         }
-       
-        public List<string> GetSessionList()
-        {
-            // Retrieve the list from session
-            var session = _sessionHelpers.GetList<string>(HttpContext.Session, "UserSession");
-            return session;
-        }
-        private string GetObject(int obj)
-        {
-            var token = GetSessionList();
-            var i = token.ElementAt(obj);
-            return i;
 
-        }
+
+
+
     }
 }

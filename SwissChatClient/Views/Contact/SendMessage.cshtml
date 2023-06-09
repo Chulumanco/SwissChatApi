@@ -1,48 +1,94 @@
-﻿@page
-
-@*@model ChatsViewModel*@
-
-@{
-    var sessionData = ViewBag.SessionData as string;
+﻿@{
+    var sessionValue = Context.Request.HttpContext.Session.GetString("SessionKey");
 }
-
-
-
-<form method="post">
+<div id="messageContainer" class="container">
+    <div class="row">
+        <div class="col">
+            <div class="message">
+                <div class="user"></div>
+                <div class="content"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<hr/>
     <div>
-        <h4 class="card-title text-primary"> Send a text to @sessionData</h4>
+
+        <div class="header">
+            <h4 class="h4 text-light"> Text @sessionValue</h4>
+        </div>
        <hr/>
     </div>
 
         <div class="input-group">
-            <textarea class="form-control" placeholder="What's happening?" rows="3"></textarea>
+
+        <textarea class="form-control" placeholder="What's happening?" id="messageId" rows="3"></textarea>
            
         </div>
         <br/>
     <div>
-    <button type="submit" class="btn btn-primary">Send Message</button>
+    <button type="button" id="sendForm" class="btn btn-success"">Send Message</button>
     </div>
 
-</form>
+
 
 @section Scripts {
-    <script src="~/lib/signalr/dist/browser/signalr.min.js"></script>
+    
+ 
+  
     <script>
-        var user = '@sessionData';
-       
+        let user = ' @sessionValue';
+        const message = document.getElementById('messageId');
+        document.getElementById("sendForm").addEventListener("click", function () {
+           
+           
+            console.log(message.value);
+            debugger
+            sendMessage(user, message.value);
+           
+
+        });
         const connection = new signalR.HubConnectionBuilder()
             .withUrl("/chatHub")
             .build();
 
-        connection.start().then(function () {
-            console.log("Connected to SignalR Hub");
-        }).catch(function (err) {
-            console.error(err.toString());
+        connection.on("ReceiveMessage", (user, message) => {
+            var messageHtml = '<div class="message">' +
+                '<div class="user">' + user + '</div>' +
+                '<div class="content">' + message + '</div>' +
+                '</div>';
+
+            // Append the message HTML to the message container
+            $('#messageContainer .col').append(messageHtml);
         });
 
-        connection.on("ReceiveMessage", function (user, message) {
-            console.log(user + ": " + message);
+        connection.start().then(() => {
+            // Connection established
+        }).catch((error) => {
+            // Error occurred while starting connection
         });
+
+        // Function to send a message
+      
+        function sendMessage(user, message) {
+            const url = `https://localhost:7113/api/chat/sendToUser?username=${encodeURIComponent(user)}&message=${encodeURIComponent(message)}`;
+            //const url = `https://example.com/api/endpoint?param1=${encodeURIComponent(param1)}&param2=${encodeURIComponent(param2)}`;
+
+            fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+               
+            }).then(response => {
+                // Handle response
+            }).catch(error => {
+                // Handle error
+            });
+        }
+
+      
+     
     </script>
 }
 

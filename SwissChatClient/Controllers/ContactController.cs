@@ -20,6 +20,9 @@ using System.Text.Json.Nodes;
 using System.Text.Json;
 using System.Xml.Linq;
 using static SwissChatClient.Models.ChatsViewModel;
+using Microsoft.Extensions.Primitives;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
+
 
 namespace SwissChatClient.Controllers
 {
@@ -27,7 +30,7 @@ namespace SwissChatClient.Controllers
     {
 
         string baseUrl = "https://localhost:7163/Contact/";
-        private readonly HttpClient _httpClientFactory;
+        ApiHelper apiHelper = new ApiHelper();
         private ISessionHelpers _sessionHelpers;
 
         public ContactController(ISessionHelpers sessionHelpers)
@@ -39,136 +42,73 @@ namespace SwissChatClient.Controllers
         [HttpGet]
         public async Task<IActionResult> Contacts(string id)
         {
-            var token = GetObject(3);
-            var contents = await ApiHelper.GetAsync(baseUrl + "contacts" + $"/{id}", token);
-
-            var hasObject = HasProperty(contents);
-            if (hasObject == "Authorized")
+            var token = GetSessionEliment(Convert.ToInt16(UserSession.Token));
+            var (postResponseContent, postStatusCode) = await apiHelper.GetAsync(baseUrl + "contacts" + $"/{id}", token.ToString());
+            if(postStatusCode==HttpStatusCode.OK)
             {
+                var contacts = Newtonsoft.Json.JsonConvert.DeserializeObject<List<ContactResponse>>(postResponseContent);
 
-                var newModel = GetObjects(contents);
-                return View("Index", newModel);
+                return View("Index", contacts);
             }
-            if (hasObject == "Unauthorized")
-            {
-                ModelState.AddModelError("CustomError", "Invalid login attempt.");
-                return View("~/Views/Home/Index.cshtml");
-            }
-           
-
-            ModelState.AddModelError("CustomError", "Something went wrong.");
+         
             return View("~/Views/Home/Index.cshtml");
            
         }
-    
-            
+     
 
-
-        
         [HttpPost]
-        public async Task<JsonResult> Create(string username)
+        public async Task<IActionResult> Create(string username)
         {
-            //var client = _httpClientFactory.CreateClient();
-            var token = GetObject(3);
+            var model = new CreateRequest();
+            model.Username = username.Replace("'",string.Empty);  
+            model.UserId = Guid.Parse(GetSessionEliment(Convert.ToInt16(UserSession.Id)));
+            var token = GetSessionEliment(Convert.ToInt16(UserSession.Token));
+            var (postResponseContent, postStatusCode) = await apiHelper.PostAsync(baseUrl + "addcontact", model,token);
 
-            var contents = await ApiHelper.PostAsync(baseUrl + "addcontact", username,token);
-           
-            return Json(contents);
+            if (postStatusCode == HttpStatusCode.OK)
+            {
+              
+
+                return RedirectToAction("Contacts", "Contact", new { id = model.UserId.ToString() });
+            }
+
+            else
+            {
+                var contactResponses = JsonConvert.DeserializeObject(postResponseContent); 
+                return Json(new { response = false, message = contactResponses });
+               // return Json(message);
+            }
+
+
 
         }
-        [HttpGet]
-        public async Task<IActionResult> GetUser(string username)
+       
+        public async Task<IActionResult> SendMessage(string id)
         {
-           
-            //var mysession = new List<string> { username };
-            _sessionHelpers.Set(HttpContext.Session, "contact", username);
-            return Json(new { result = true });
+            HttpContext.Session.SetString("SessionKey", id);
+            return View();
 
         }
-        [HttpGet]
-        public async Task<IActionResult> SendMessage()
+        public async Task<IActionResult> ReceiveMessage()
         {
-           var sessionData = _sessionHelpers.Get<string>(HttpContext.Session, "contact");
-         
-            ViewBag.SessionData = sessionData;
 
             return View();
-            // return Json(model);
-        }
-        private IEnumerable<ContactResponse> GetObjects(string content)
-        {
-           if(content== "Unauthorized")
-            {
-                return null;
-            }
-       
-            IEnumerable<ContactResponse> objList = JsonConvert.DeserializeObject<IEnumerable<ContactResponse>>(content);
-            return objList;
-          
-        }
-        public List<string> GetSessionList()
-        {
-            // Retrieve the list from session
-            var session = _sessionHelpers.GetList<string>(HttpContext.Session, "UserSession");
-            return session;
-        }
-        private string GetObject(int obj)
-        {
-           var token = GetSessionList();
-            var i = token.ElementAt(obj);
-            return i;
 
         }
-    
-        public static string HasProperty(string data)
+        public string GetSessionEliment(int iteration)
         {
-            var jObj = JsonConvert.DeserializeObject<ContactResponse[]>(data);
-            //JObject jsonArray = JObject.Parse(data);
-
-            //JObject jObject = new JObject(jsonArray.Children().Cast<JObject>().SelectMany(obj => obj.Properties()));
-
-            //var model =
-            var model = new ContactResponse() { };
-            foreach (var item in jObj)
+           
+            var session = _sessionHelpers.GetListParameterFromSession(HttpContext, "UserSession");
+            List<string> sessionList = session;
+           // int iteration = 4; // Desired iteration (1-based index)
+            var token="";
+            if (iteration >= 1 && iteration <= sessionList.Count)
             {
-                model.Id = item?.Id;
-
-                model.Unauthorized = item?.Unauthorized;
+                token = sessionList[iteration - 1].ToString();
             }
-
-            if (model?.IsAuthenticated != null)
-            {
-                return "Unauthorized";
-            }
-           else if (model?.Id != null || model?.Id != Guid.Empty)
-            {
-               return "Authorized";
-            }
-            return "Other";
+            return token;
         }
-        public T DeserializeJson<T>(string json)
-        {
-            try
-            {
-                // Attempt to deserialize as an array
-                return JsonConvert.DeserializeObject<T>(json);
-            }
-            catch (JsonSerializationException)
-            {
-                try
-                {
-                    // Attempt to deserialize as a single object
-                    var singleObjectArray = new[] { JsonConvert.DeserializeObject<T>(json) };
-                    return singleObjectArray[0];
-                }
-                catch (JsonSerializationException ex)
-                {
-                    // Handle any deserialization errors
-                    Console.WriteLine($"Error deserializing JSON: {ex.Message}");
-                    return default;
-                }
-            }
-        }
+
 
 
 

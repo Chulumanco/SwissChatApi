@@ -6,5 +6,7 @@ namespace SwissChatApi.Model.Contacts
     {
         [Required]
         public string Username { get; set; }
+
+        public Guid UserId { get; set; }
     }
 }

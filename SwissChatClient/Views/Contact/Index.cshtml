@@ -12,12 +12,13 @@
 
             <nav>
                 <ul>
-                    <li><a href="#">Home</a></li>
                    
-                    <li><a href="#">Groups</a></li>
-                    <li><a href="#">Messages</a></li>
-                    <li><a href="#">Profile</a></li>
-                    <li><a href="#">Logout</a></li>
+                   
+                    <li><a href="#" class="link-light">Groups</a></li>
+                    <li> <a asp-controller="Contact" asp-action="ReceiveMessage" class="link-light">Messages</a></li>
+                    
+                    <li><a href="#" class="link-light">Profile</a></li>
+                    <li><a href="#" class="link-light">Logout</a></li>
                 </ul>
             </nav>
         </div>
@@ -46,16 +47,24 @@
                 <div class="tweet-content">
                     @foreach(var item in Model)
                     {
+                        bool logged = @item.IsAuthenticated;
                       
                         <div class="row">
                             <div class="col">
                                 <h5><a >@item.Username</a></h5>
                             </div>
                             <div class="col">
-                                <button type="button" id="sendButton" data-username="@item.Username" class="btn btn-outline-info btn-sm">chat</button>
+                               
                             </div>
+                           
+                         
+                            <div class="col">
+                                <a asp-controller="Contact" asp-action="SendMessage" asp-route-id="@item.Username" class = "btn btn-outline-warning"> Chat..</a>
+                         
+                            </div>
+                     
                         </div>
-                        bool logged = @item.IsAuthenticated;
+                        
                         <span>
                             @if (logged)
                             {
@@ -70,15 +79,15 @@
                         </span>
           
                         <hr/>
-                        
-                    }
+                     }
                 </div>
             </div>
             <!-- More tweets... -->
         </div>
     </main>
-
+ 
 </body>
+
 <!-- Modal -->
 @*<form action="" class="form-horizontal" id="CreateContactForm">*@
     <div class="modal fade" id="addContact" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -102,48 +111,6 @@
 @*</form>
 *@
 </html>
-@section Scripts {
-    
-    <script>
-        //$(document).ready(function () {
-        //   getUsername();
-        //});
-        document.getElementById("sendButton").addEventListener("click", function () {
-            //insert here the code to be executed
-            let username = $(this).data('username');
-            getUsername(username);
-        });
-
-
-        const getUsername = (username) => {
-
-            const url = "/Contact/GetUser/?username=' " + username
-            $.ajax({
-                type: "GET",
-                url: url,
-                contentType: "application/json; charset=utf-8",
-                //headers: {
-                //    "Content-Type": "application/json",
-                //},
-                //dataType: "json",
-                success: function (status) {
-                    debugger
-                    window.location.href = "/Contact/SendMessage/";
-                    console.log(status);
-
-
-                },
-                error: function () {
-
-                }
-            });
-
-        }
-
-
-       
-    </script>
-}
 
 
 

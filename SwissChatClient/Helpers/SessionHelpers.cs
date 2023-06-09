@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System;
 using System.Configuration;
 using System.Reflection;
@@ -10,30 +11,34 @@ namespace SwissChatClient.Helpers
 {
     public class SessionHelpers : ISessionHelpers
     {
-        public T Get<T>(ISession session, string key)
+
+
+        public void SetListParameterInSession(HttpContext context, string parameterName, List<string> parameterValue)
         {
-            var value = session.GetString(key);
-            return value == null ? default : JsonSerializer.Deserialize<T>(value);
+            string parameterJson = JsonConvert.SerializeObject(parameterValue);
+            byte[] parameterBytes = System.Text.Encoding.UTF8.GetBytes(parameterJson);
+            context.Session.Set(parameterName, parameterBytes);
+        }
+        public List<string> GetListParameterFromSession(HttpContext context, string parameterName)
+        {
+            if (context.Session.TryGetValue(parameterName, out byte[] parameterBytes))
+            {
+                string parameterJson = System.Text.Encoding.UTF8.GetString(parameterBytes);
+                List<string> parameterList = JsonConvert.DeserializeObject<List<string>>(parameterJson);
+                return parameterList;
+            }
+
+            return null;
+        }
+        public void SetStringSessionValue(HttpContext context, string key, string value)
+        {
+            context.Session.SetString(key, value);
         }
 
-        public void Set<T>(ISession session, string key, T value)
+        public string GetStringSessionValue(HttpContext context, string key)
         {
-            session.SetString(key, JsonSerializer.Serialize(value));
+            return context.Session.GetString(key);
         }
-
-        public void SetList<T>(ISession session, string key, List<T> list)
-        {
-            session.SetString(key, JsonSerializer.Serialize(list));
-
-        }
-
-        public  List<T> GetList<T>(ISession session, string key)
-        {
-            var value = session.GetString(key);
-          
-            return value == null ? new List<T>() : JsonSerializer.Deserialize<List<T>>(value);
-        }
-      
 
     }
 

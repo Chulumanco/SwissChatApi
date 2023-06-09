@@ -43,11 +43,14 @@ namespace SwissChatClient.Models
             public string Message { get; set; }
             public bool? IsSuccess { get; set; }
         }
-        public enum JsonResponse
+        public enum UserSession
         {
-            Unauthorized,
-            IsAuthenticated,
-            Successful
+            Id =1,
+            FirstName,
+            LastName,
+            Username,
+            Token,
+            IsAuthenticated
         }
 
     }

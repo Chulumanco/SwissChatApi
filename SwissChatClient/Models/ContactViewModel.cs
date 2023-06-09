@@ -1,4 +1,6 @@
-﻿namespace SwissChatClient.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace SwissChatClient.Models
 {
     public class ContactViewModel
     {
@@ -13,5 +15,13 @@
             public bool IsAuthenticated { get; set; }
             public string? Unauthorized { get; set; }
         }
+        public class CreateRequest
+        {
+            [Required]
+            public string Username { get; set; }
+          
+            public Guid UserId { get; set; }
+        }
+
     }
 }

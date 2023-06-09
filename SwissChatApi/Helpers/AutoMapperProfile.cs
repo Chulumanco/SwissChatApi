@@ -3,6 +3,7 @@
     using AutoMapper;
     using SwissChatApi.Entities;
     using SwissChatApi.Model.Users;
+    using SwissChatApi.Model.Contacts;
 
     public class AutoMapperProfile : Profile
     {
@@ -13,6 +14,7 @@
 
             // RegisterRequest -> User
             CreateMap<RegisterRequest, User>();
+            CreateMap<Contacts, CreateRequest>();
 
             // UpdateRequest -> User
             CreateMap<UpdateRequest, User>()

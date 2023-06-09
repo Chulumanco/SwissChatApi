@@ -1,0 +1,39 @@
+﻿@page
+@model ChatsViewModel.ReceiveMessageModel
+
+<h1>Received Messages</h1>
+
+<div>
+    @if (Model?.Messages.Count > 0)
+    {
+        @foreach (var message in Model.Messages)
+        {
+            <p>@message.UserName: @message.Message</p>
+        }
+
+    }
+    else
+    {
+        <p>No messages</p>
+    }
+</div>
+
+@section Scripts {
+    <script src="~/lib/signalr/dist/browser/signalr.min.js"></script>
+    <script>
+     
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/chatHub")
+            .build();
+
+        connection.start().then(function () {
+            console.log("Connected to SignalR Hub");
+        }).catch(function (err) {
+            console.error(err.toString());
+        });
+
+        connection.on("ReceiveMessage", function (user, message) {
+            console.log(user + ": " + message);
+        });
+    </script>
+}

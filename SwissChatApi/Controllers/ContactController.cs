@@ -5,7 +5,7 @@ using Microsoft.Extensions.Options;
 using SwissChatApi.Authorization;
 using SwissChatApi.Services;
 using SwissChatApi.Helpers;
-using SwissChatApi.Model.Users;
+using SwissChatApi.Model.Contacts;
 
 namespace SwissChatApi.Controllers
 {
@@ -30,17 +30,13 @@ namespace SwissChatApi.Controllers
         }
 
         [HttpPost("addcontact")]
-        public async Task<IActionResult> Create(string username, Guid userId)
+        public async Task<IActionResult> Create(CreateRequest model)
         {
             try
 
             {
-                //Don't allow user to add themselves ascontacts
 
-
-                //var email = User.FindFirst("sub")?.Value;
-                // create contact
-                await _contactService.Create(username, userId);
+                await _contactService.Create(model);
 
                 return Ok(new { message = "Contact has been successfully added" });
             }
@@ -66,7 +62,7 @@ namespace SwissChatApi.Controllers
             catch (AppException ex)
             {
                 // return error message if there was an exception
-                return BadRequest(new { respones = ex.Message + "!", message = "Invalid login" });
+                return BadRequest(new { message = ex.Message });
             }
 
         }

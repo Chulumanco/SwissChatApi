@@ -6,41 +6,46 @@ using System.Text;
 using System.Runtime.Serialization.Json;
 using System.Xml.Linq;
 using SwissChatClient.Helpers;
+using System.Security.Policy;
+using Microsoft.AspNetCore.Http;
+using System.Net;
+using System.Reflection;
 
 namespace SwissChatClient.Controllers
 {
     public class AccountController : Controller
     {
+        ApiHelper apiHelper = new ApiHelper();
         string baseUrl = "https://localhost:7163/Users/";
         //private readonly HttpClient _httpClientFactory;
         private ISessionHelpers _sessionHelpers;
-        
-        public AccountController(ISessionHelpers sessionHelpers )
+       
+        public AccountController(ISessionHelpers sessionHelpers)
         {
-           //_httpClientFactory = new HttpClient();
-           // _httpClientFactory.BaseAddress = baseUrl;
+            
             _sessionHelpers = sessionHelpers;
         }
 
         [HttpPost]
         public async Task<IActionResult> Login(Authenticate model)
         {
-            try
-            {
-             
-         
-                var contents = await ApiHelper.PostAsync(baseUrl + "authenticate", model, null);
-                
-                //var res = GetObjects(contents);
-               
+ 
 
-                return RedirectToAction("Contacts", "Contact", new { id = res.Id });
-            }
-            catch (AppException ex)
-            {
-                // return error message if there was an exception
-                return View(new { message = ex.Message });
-            }
+                var (postResponseContent, postStatusCode) = await apiHelper.PostAsync(baseUrl + "authenticate", model);
+                if (postStatusCode == HttpStatusCode.OK)
+                {
+               
+                      var user = Newtonsoft.Json.JsonConvert.DeserializeObject<AuthenticateResponse>(postResponseContent);
+                       SetSessionList(user);
+                    return RedirectToAction("Contacts", "Contact", new { id = user.Id.ToString() });
+                }
+                else
+                {
+                    ModelState.AddModelError("CustomError", "Invalid login attempt.");
+                    return View("~/Views/Home/Index.cshtml");
+                }
+                //var bodyJson = await request.Content.ReadAsStringAsync();
+               
      
 
         }
@@ -63,55 +68,36 @@ namespace SwissChatClient.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(RegisterRequest model)
         {
-            try
+
+            var (postResponseContent, postStatusCode) = await apiHelper.PostAsync(baseUrl + "register", model);
+            if (postStatusCode == HttpStatusCode.OK)
             {
 
-
-                var contents = await ApiHelper.PostAsync(baseUrl + "register", model, null);
-                //var res = GetObjects(contents);
-
-
-                //return RedirectToAction("Login", "");
+              
+              
                 return View("~/Views/Home/Index.cshtml");
             }
-            catch (AppException ex)
+            else
             {
-                // return error message if there was an exception
-                return View(new { message = ex.Message });
+                ModelState.AddModelError("CustomError", "Registration unsuccessful, please try again later.");
+                return View("~/Views/Home/Index.cshtml");
             }
-
+           
 
         }
 
-        private AuthenticateResponse GetObjects(string content)
-        {
-          ///  dynamic json = JsonConvert.DeserializeObject(content);
-            var emp = Newtonsoft.Json.JsonConvert.DeserializeObject<AuthenticateResponse>(content);
-            SetSessionList(emp);
-            return emp;
-        }
+
         public void SetSessionList(AuthenticateResponse model)
         {
-            // Set a list of strings in session
-            var mysession = new List<string> {model.Username, model.FirstName, model.LastName, model.Token };
+         
+        // Set a list of strings in session
+        var mysession = new List<string> {model.Id.ToString(), model.FirstName,  model.LastName, model.Username, model.Token, model.IsAuthenticated.ToString() };
         
-          _sessionHelpers.SetList(HttpContext.Session, "UserSession", mysession);
+          _sessionHelpers.SetListParameterInSession(HttpContext, "UserSession", mysession);
           
         }
 
-        public List<string> GetSessionList()
-        {
-            // Retrieve the list from session
-            var session = _sessionHelpers.GetList<string>(HttpContext.Session, "UserSession");
-            return session;
-        }
-        private string GetObject(int obj)
-        {
-            var token = GetSessionList();
-            var i = token.ElementAt(obj);
-            return i;
-
-        }
+     
 
 
     }
